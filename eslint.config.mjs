@@ -20,7 +20,6 @@ export default [
       'node_modules/*', // ignore its content
       '!node_modules/mylibrary/', // unignore `node_modules/mylibrary` directory
       'dist/', // ignore `dist/` directory
-      'jest.config.js', // ignore `jest.config.js` directory
     ],
   },
 ];

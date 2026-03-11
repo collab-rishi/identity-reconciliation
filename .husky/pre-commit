@@ -7,12 +7,21 @@ npm run lint ||
     false; 
 )
 
+# Check tsconfig standards
+npm run typecheck ||
+(
+    echo 'The TypeScript configuration check has failed. Address the outlined issues above.'
+    false;
+)
+
+# Check the api routes are working properly
 npm run test ||
 (
     echo 'Test Check Failed. Make sure your local server is running, review the listed issues, make the required adjustments, add the changes, and attempt to commit again.'
     false; 
 )
 
+# Check the code formatted correctly
 prettier . --check ||
 (
     echo 'Run `npx prettier . --write` to fix.'
