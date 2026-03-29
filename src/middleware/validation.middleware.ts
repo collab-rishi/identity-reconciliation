@@ -20,12 +20,13 @@ export const validateIdentifyRequest = (
     next();
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({
+       res.status(400).json({
         errors: error.issues.map((err) => ({
           path: err.path,
           message: err.message,
         })),
       });
+      return;
     }
     next(error);
   }
