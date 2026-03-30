@@ -38,18 +38,20 @@ export class IdentityService {
       (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
     )[0];
 
-    const otherPrimaryIds = primaryIds.filter(id => id !== truePrimary.id);
+    const otherPrimaryIds = primaryIds.filter((id) => id !== truePrimary.id);
 
     if (otherPrimaryIds.length > 0) {
-      await this.contactRepo.convertToSecondary(otherPrimaryIds, truePrimary.id);
+      await this.contactRepo.convertToSecondary(
+        otherPrimaryIds,
+        truePrimary.id
+      );
 
       allRelated = await this.contactRepo.findByPrimaryIds([truePrimary.id]);
     }
 
-
-
     const isNewEmail = email && !allRelated.some((c) => c.email === email);
-    const isNewPhone = phoneNumber && !allRelated.some((c) => c.phoneNumber === phoneNumber);
+    const isNewPhone =
+      phoneNumber && !allRelated.some((c) => c.phoneNumber === phoneNumber);
 
     if (isNewEmail || isNewPhone) {
       const newSecondary = await this.contactRepo.create({
