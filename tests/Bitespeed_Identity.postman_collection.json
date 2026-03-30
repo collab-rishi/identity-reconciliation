@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "Bitespeed Identity Reconciliation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Ishaan (Primary)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"ishaan.v@gmail.com\",\n    \"phoneNumber\": \"9812345678\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/identify",
+          "host": ["{{base_url}}"],
+          "path": ["identify"]
+        }
+      }
+    },
+    {
+      "name": "2. Create Advait (Primary)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"advait.tek@gmail.com\",\n    \"phoneNumber\": \"7011223344\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/identify",
+          "host": ["{{base_url}}"],
+          "path": ["identify"]
+        }
+      }
+    },
+    {
+      "name": "3. Add Secondary to Advait",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"advait.tek@gmail.com\",\n    \"phoneNumber\": \"5555555555\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/identify",
+          "host": ["{{base_url}}"],
+          "path": ["identify"]
+        }
+      }
+    },
+    {
+      "name": "4. The Big Merge (1 + 2)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"ishaan.v@gmail.com\",\n    \"phoneNumber\": \"7011223344\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/identify",
+          "host": ["{{base_url}}"],
+          "path": ["identify"]
+        }
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": { "type": "text/javascript", "exec": [""] }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" }
+  ]
+}
