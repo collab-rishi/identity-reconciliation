@@ -20,23 +20,22 @@ export class IdentityService {
         linkPrecedence: 'primary',
         linkedId: null,
       });
-
       return this.formatResponse(newContact, [newContact]);
     }
 
     const primaryIds = [
       ...new Set(
         existingContacts.map((c) =>
-          c.linkPrecedence === 'primary' ? c.id : (c.linkedId as number)
+          c.linkPrecedence === 'primary' ? c.id : c.linkedId!
         )
       ),
     ];
 
     let allRelated = await this.contactRepo.findByPrimaryIds(primaryIds);
 
-    const truePrimary = [...allRelated].sort(
-      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-    )[0];
+    const truePrimary = allRelated
+      .filter((c) => c.linkPrecedence === 'primary') // Only a primary can be the "True Primary"
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0];
 
     const otherPrimaryIds = primaryIds.filter((id) => id !== truePrimary.id);
 
@@ -60,7 +59,6 @@ export class IdentityService {
         linkedId: truePrimary.id,
         linkPrecedence: 'secondary',
       });
-
       allRelated.push(newSecondary);
     }
 
@@ -68,27 +66,30 @@ export class IdentityService {
   }
 
   private formatResponse(primaryContact: Contact, allRelated: Contact[]) {
+    const secondaryContactIds = allRelated
+      .filter((c) => c.id !== primaryContact.id)
+      .map((c) => c.id);
+
     const emails = [
-      ...new Set([primaryContact.email, ...allRelated.map((c) => c.email)]),
-    ].filter(Boolean);
+      primaryContact.email,
+      ...allRelated
+        .map((c) => c.email)
+        .filter((e) => e !== primaryContact.email),
+    ].filter((e): e is string => Boolean(e));
 
     const phoneNumbers = [
-      ...new Set([
-        primaryContact.phoneNumber,
-        ...allRelated.map((c) => c.phoneNumber),
-      ]),
-    ].filter(Boolean);
-
-    const secondaryContactIds = allRelated
-      .filter((c) => c.linkPrecedence === 'secondary')
-      .map((c) => c.id);
+      primaryContact.phoneNumber,
+      ...allRelated
+        .map((c) => c.phoneNumber)
+        .filter((p) => p !== primaryContact.phoneNumber),
+    ].filter((p): p is string => Boolean(p));
 
     return {
       contact: {
         primaryContactId: primaryContact.id,
-        emails,
-        phoneNumbers,
-        secondaryContactIds,
+        emails: [...new Set(emails)],
+        phoneNumbers: [...new Set(phoneNumbers)],
+        secondaryContactIds: [...new Set(secondaryContactIds)],
       },
     };
   }
