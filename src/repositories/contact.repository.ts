@@ -36,13 +36,23 @@ export class ContactRepository {
   }
 
   async convertToSecondary(idsToUpdate: number[], newPrimaryId: number) {
-    return await prisma.contact.updateMany({
+    await prisma.contact.updateMany({
       where: {
         id: { in: idsToUpdate },
       },
       data: {
         linkedId: newPrimaryId,
         linkPrecedence: 'secondary',
+        updatedAt: new Date(),
+      },
+    });
+
+    await prisma.contact.updateMany({
+      where: {
+        linkedId: { in: idsToUpdate },
+      },
+      data: {
+        linkedId: newPrimaryId,
         updatedAt: new Date(),
       },
     });
