@@ -4,7 +4,7 @@ A production-ready Node.js/TypeScript backend service designed to consolidate cu
 
 ## 🚀 Live Demo
 
-#### Endpoint: https://your-app-name.onrender.com/identify
+#### Endpoint: https://identity-reconciliation-3et5.onrender.com
 
 ## 🏗️ Architecture & Design
 
@@ -56,12 +56,30 @@ The service handles four key scenarios:
 
 - Crucially, all existing Secondaries of the demoted Primary are recursively updated to point directly to the True Primary. This maintains a flat tree structure (depth of 1), preventing nested identity chains and optimizing query performance.
 
+
+
+
+## 💡 Design Decisions & Trade-offs
+
+### 1. Relational Integrity with PostgreSQL
+Chose **PostgreSQL** over NoSQL because identity reconciliation requires **Strong Consistency**. During a "Primary Merge," we need to ensure that the demotion of one contact and the re-linking of its descendants happen atomically to prevent data fragmentation.
+
+### 2. Recursive Flattening Strategy
+Instead of allowing "linked chains" (A to B to C), the service implements a **Recursive Flattening** algorithm. When two primaries merge, all existing secondaries are updated to point directly to the new "True Primary." 
+- **Benefit:** Reduces database lookup complexity from O(N) to O(1) for identity resolution.
+
+### 3. Layered Repository Pattern
+By isolating Prisma logic into a dedicated **Repository Layer**, the **Service Layer** remains agnostic of the database implementation. This makes the business logic easier to unit test and allows for swapping the ORM/Database in the future with minimal code changes.
+
+### 4. Timestamp-Based Truth
+Used `createdAt` as the "Source of Truth" for Primary status. This ensures that the original customer interaction is always respected, providing a consistent historical timeline even if database IDs are non-sequential.
+
 ## 🛠️ Local Setup
 
 Clone the repo:
 
 ```Bash
-git clone https://github.com/your-username/bitespeed-task.git
+git clone https://github.com/collab-rishi/identity-reconciliation.git
 cd bitespeed-task
 ```
 
